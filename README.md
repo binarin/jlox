@@ -5,7 +5,7 @@ jlox is an interpreter for the Lox programming language, as described in the boo
 ## Build Instructions
 
 ### Prerequisites
-- Java Development Kit (JDK) 8 or higher
+- Java Development Kit (JDK) 17 or higher
 - Maven 3.6 or higher
 
 ### Building with Maven
@@ -60,7 +60,7 @@ The project follows the standard Maven directory structure:
 
 ## Testing
 
-The project uses JUnit for testing. Tests can be run with:
+The project uses JUnit 5 (Jupiter) for testing. Tests can be run with:
 
 ```bash
 mvn test
@@ -73,7 +73,7 @@ This project uses GitHub Actions for continuous integration. The workflow automa
 - Every pull request targeting the `master` branch
 
 The CI workflow:
-1. Sets up Java 8
+1. Sets up Java 17
 2. Builds the project
 3. Runs all tests
 4. Packages the application
@@ -99,3 +99,25 @@ You can view the workflow configuration in `.github/workflows/build-and-test.yml
 3. **Documentation**
    - Add comments for complex logic
    - Document public methods with clear descriptions of parameters and return values
+
+## Modern Java Features
+
+This project has been modernized to use Java 17 features:
+
+1. **Language Features**
+   - Record classes (where appropriate)
+   - Enhanced switch expressions
+   - Text blocks for multi-line strings
+   - Local variable type inference (var)
+   - Try-with-resources for automatic resource management
+
+2. **Code Quality**
+   - Comprehensive Javadoc documentation
+   - Improved error handling
+   - Better code organization
+   - Modern collection initialization (Map.ofEntries, etc.)
+
+3. **Testing**
+   - JUnit 5 (Jupiter) for modern testing
+   - Descriptive test names with @DisplayName
+   - AssertJ for fluent assertions

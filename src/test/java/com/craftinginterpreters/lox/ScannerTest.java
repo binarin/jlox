@@ -1,8 +1,9 @@
 package com.craftinginterpreters.lox;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.After;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DisplayName;
 import org.assertj.core.api.Assertions;
 
 import java.util.ArrayList;
@@ -12,21 +13,23 @@ import java.util.List;
 import static com.craftinginterpreters.lox.TokenType.*;
 
 /**
- * A test class for the Lox Scanner that compares actual tokens with expected tokens
+ * A test class for the Lox Scanner that compares actual tokens with expected tokens.
+ * Uses JUnit 5 (Jupiter) for testing.
  */
-public class ScannerTest {
-    @Before
-    public void setUp() {
+class ScannerTest {
+    @BeforeEach
+    void setUp() {
         // Setup code if needed in the future
     }
 
-    @After
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
         // Teardown code if needed in the future
     }
 
     @Test
-    public void testSimpleExpression() {
+    @DisplayName("Test scanning of a simple expression")
+    void testSimpleExpression() {
         testScanner("1 + 2", Arrays.asList(
             new Token(NUMBER, "1", 1.0, 1),
             new Token(PLUS, "+", null, 1),
@@ -36,7 +39,8 @@ public class ScannerTest {
     }
     
     @Test
-    public void testString() {
+    @DisplayName("Test scanning of string literals")
+    void testString() {
         testScanner("\"Hello, world!\"", Arrays.asList(
             new Token(STRING, "\"Hello, world!\"", "Hello, world!", 1),
             new Token(EOF, "", null, 1)
@@ -44,7 +48,8 @@ public class ScannerTest {
     }
     
     @Test
-    public void testKeywords() {
+    @DisplayName("Test scanning of Lox keywords")
+    void testKeywords() {
         testScanner("if (true) { print \"yes\"; } else { print \"no\"; }", Arrays.asList(
             new Token(IF, "if", null, 1),
             new Token(LEFT_PAREN, "(", null, 1),
@@ -66,7 +71,8 @@ public class ScannerTest {
     }
     
     @Test
-    public void testMultilineLexing() {
+    @DisplayName("Test scanning of multiline code")
+    void testMultilineLexing() {
         testScanner("var a = 1;\nvar b = 2;", Arrays.asList(
             new Token(VAR, "var", null, 1),
             new Token(IDENTIFIER, "a", null, 1),
@@ -83,7 +89,8 @@ public class ScannerTest {
     }
     
     @Test
-    public void testMultilineString() {
+    @DisplayName("Test scanning of multiline strings")
+    void testMultilineString() {
         testScanner("\"Hello,\nworld!\"", Arrays.asList(
             new Token(STRING, "\"Hello,\nworld!\"", "Hello,\nworld!", 2),
             new Token(EOF, "", null, 2)
@@ -91,7 +98,8 @@ public class ScannerTest {
     }
     
     @Test
-    public void testSingleLineComments() {
+    @DisplayName("Test scanning with single-line comments")
+    void testSingleLineComments() {
         testScanner("var a = 1; // This is a comment\nvar b = 2;", Arrays.asList(
             new Token(VAR, "var", null, 1),
             new Token(IDENTIFIER, "a", null, 1),
@@ -108,7 +116,8 @@ public class ScannerTest {
     }
     
     @Test
-    public void testSingleLineCommentAtEndOfFile() {
+    @DisplayName("Test scanning with single-line comment at end of file")
+    void testSingleLineCommentAtEndOfFile() {
         testScanner("var a = 1; // This is a comment", Arrays.asList(
             new Token(VAR, "var", null, 1),
             new Token(IDENTIFIER, "a", null, 1),
@@ -120,7 +129,8 @@ public class ScannerTest {
     }
     
     @Test
-    public void testMultilineComments() {
+    @DisplayName("Test scanning with multiline comments")
+    void testMultilineComments() {
         testScanner("/* This is a\nmultiline comment */var a = 1;", Arrays.asList(
             new Token(VAR, "var", null, 2),
             new Token(IDENTIFIER, "a", null, 2),
@@ -132,7 +142,8 @@ public class ScannerTest {
     }
     
     @Test
-    public void testMultilineCommentsInMiddleOfCode() {
+    @DisplayName("Test scanning with multiline comments in middle of code")
+    void testMultilineCommentsInMiddleOfCode() {
         testScanner("var a = 1; /* This is a\nmultiline comment\nwith multiple lines */var b = 2;", Arrays.asList(
             new Token(VAR, "var", null, 1),
             new Token(IDENTIFIER, "a", null, 1),
@@ -149,7 +160,8 @@ public class ScannerTest {
     }
     
     @Test
-    public void testNestedLookingComments() {
+    @DisplayName("Test scanning with comments containing * and / characters")
+    void testNestedLookingComments() {
         testScanner("/* Comment with * and / characters */var a = 1;", Arrays.asList(
             new Token(VAR, "var", null, 1),
             new Token(IDENTIFIER, "a", null, 1),
@@ -160,35 +172,43 @@ public class ScannerTest {
         ));
     }
     
+    /**
+     * Helper method to test the scanner with a given source code and expected tokens.
+     * 
+     * @param source the source code to scan
+     * @param expectedTokens the expected tokens from scanning the source
+     */
     private void testScanner(String source, List<Token> expectedTokens) {
         System.out.println("Testing: " + source);
-        Scanner scanner = new Scanner(source);
-        List<Token> actualTokens = scanner.scanTokens();
+        var scanner = new Scanner(source);
+        var actualTokens = scanner.scanTokens();
         
         Assertions.assertThat(actualTokens)
             .as("Token count mismatch")
             .hasSize(expectedTokens.size());
         
-        for (int i = 0; i < expectedTokens.size(); i++) {
-            Token expectedToken = expectedTokens.get(i);
-            Token actualToken = actualTokens.get(i);
+        for (var i = 0; i < expectedTokens.size(); i++) {
+            var expectedToken = expectedTokens.get(i);
+            var actualToken = actualTokens.get(i);
             
+            // Verify token type
             Assertions.assertThat(actualToken.type)
                 .as("Token type mismatch at position %d", i)
                 .isEqualTo(expectedToken.type);
                 
+            // Verify lexeme
             Assertions.assertThat(actualToken.lexeme)
                 .as("Token lexeme mismatch at position %d", i)
                 .isEqualTo(expectedToken.lexeme);
             
-            // Compare literal (with special handling for null and numeric values)
+            // Verify literal value (with special handling for null and numeric values)
             if (expectedToken.literal == null) {
                 Assertions.assertThat(actualToken.literal)
                     .as("Token literal should be null at position %d", i)
                     .isNull();
             } else if (expectedToken.literal instanceof Double && actualToken.literal instanceof Double) {
                 // Compare double values with a small epsilon for floating-point precision
-                double epsilon = 0.0001;
+                var epsilon = 0.0001;
                 Assertions.assertThat((Double)actualToken.literal)
                     .as("Token numeric literal mismatch at position %d", i)
                     .isCloseTo((Double)expectedToken.literal, Assertions.within(epsilon));
@@ -198,6 +218,7 @@ public class ScannerTest {
                     .isEqualTo(expectedToken.literal);
             }
             
+            // Verify line number
             Assertions.assertThat(actualToken.line)
                 .as("Token line number mismatch at position %d", i)
                 .isEqualTo(expectedToken.line);
