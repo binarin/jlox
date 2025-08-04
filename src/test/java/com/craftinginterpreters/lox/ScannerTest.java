@@ -3,7 +3,7 @@ package com.craftinginterpreters.lox;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.After;
-import static org.junit.Assert.*;
+import org.assertj.core.api.Assertions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -171,28 +171,42 @@ public class ScannerTest {
         Scanner scanner = new Scanner(source);
         List<Token> actualTokens = scanner.scanTokens();
         
-        assertEquals("Token count mismatch", expectedTokens.size(), actualTokens.size());
+        Assertions.assertThat(actualTokens)
+            .as("Token count mismatch")
+            .hasSize(expectedTokens.size());
         
         for (int i = 0; i < expectedTokens.size(); i++) {
             Token expectedToken = expectedTokens.get(i);
             Token actualToken = actualTokens.get(i);
             
-            assertEquals("Token type mismatch at position " + i, expectedToken.type, actualToken.type);
-            assertEquals("Token lexeme mismatch at position " + i, expectedToken.lexeme, actualToken.lexeme);
+            Assertions.assertThat(actualToken.type)
+                .as("Token type mismatch at position %d", i)
+                .isEqualTo(expectedToken.type);
+                
+            Assertions.assertThat(actualToken.lexeme)
+                .as("Token lexeme mismatch at position %d", i)
+                .isEqualTo(expectedToken.lexeme);
             
             // Compare literal (with special handling for null and numeric values)
             if (expectedToken.literal == null) {
-                assertNull("Token literal should be null at position " + i, actualToken.literal);
+                Assertions.assertThat(actualToken.literal)
+                    .as("Token literal should be null at position %d", i)
+                    .isNull();
             } else if (expectedToken.literal instanceof Double && actualToken.literal instanceof Double) {
                 // Compare double values with a small epsilon for floating-point precision
                 double epsilon = 0.0001;
-                assertTrue("Token numeric literal mismatch at position " + i, 
-                    Math.abs((Double)expectedToken.literal - (Double)actualToken.literal) <= epsilon);
+                Assertions.assertThat((Double)actualToken.literal)
+                    .as("Token numeric literal mismatch at position %d", i)
+                    .isCloseTo((Double)expectedToken.literal, Assertions.within(epsilon));
             } else {
-                assertEquals("Token literal mismatch at position " + i, expectedToken.literal, actualToken.literal);
+                Assertions.assertThat(actualToken.literal)
+                    .as("Token literal mismatch at position %d", i)
+                    .isEqualTo(expectedToken.literal);
             }
             
-            assertEquals("Token line number mismatch at position " + i, expectedToken.line, actualToken.line);
+            Assertions.assertThat(actualToken.line)
+                .as("Token line number mismatch at position %d", i)
+                .isEqualTo(expectedToken.line);
         }
         
         // Track test results for summary
