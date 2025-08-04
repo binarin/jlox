@@ -66,6 +66,21 @@ The project uses JUnit for testing. Tests can be run with:
 mvn test
 ```
 
+### Continuous Integration
+
+This project uses GitHub Actions for continuous integration. The workflow automatically runs on:
+- Every push to the `master` branch
+- Every pull request targeting the `master` branch
+
+The CI workflow:
+1. Sets up Java 8
+2. Builds the project
+3. Runs all tests
+4. Packages the application
+5. Uploads test results and the JAR file as artifacts
+
+You can view the workflow configuration in `.github/workflows/build-and-test.yml`.
+
 ## Development Guidelines
 
 ### Code Style
