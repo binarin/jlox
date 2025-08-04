@@ -80,7 +80,21 @@ class Scanner {
                 break;
             case '/':
                 if (match('/')) {
+                    // Single-line comment
                     while (peek() != '\n' && !isAtEnd()) {
+                        advance();
+                    }
+                } else if (match('*')) {
+                    // Multi-line comment
+                    while (!isAtEnd()) {
+                        if (peek() == '*' && peekNext() == '/') {
+                            // Found the closing */
+                            advance(); // consume *
+                            advance(); // consume /
+                            break;
+                        } else if (peek() == '\n') {
+                            line++;
+                        }
                         advance();
                     }
                 } else {
