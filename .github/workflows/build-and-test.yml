@@ -24,7 +24,7 @@ jobs:
       run: mvn -B clean compile
       
     - name: Test with Maven
-      run: mvn -B test
+      run: mvn -B test -Dsurefire.useFile=false
       
     - name: Package with Maven
       run: mvn -B package
