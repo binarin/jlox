@@ -15,20 +15,14 @@ import static com.craftinginterpreters.lox.TokenType.*;
  * A test class for the Lox Scanner that compares actual tokens with expected tokens
  */
 public class ScannerTest {
-    private int testsPassed = 0;
-    private int testsFailed = 0;
-
     @Before
     public void setUp() {
-        testsPassed = 0;
-        testsFailed = 0;
+        // Setup code if needed in the future
     }
 
     @After
     public void tearDown() {
-        System.out.println("\nTest Summary:");
-        System.out.println("Tests Passed: " + testsPassed);
-        System.out.println("Tests Failed: " + testsFailed);
+        // Teardown code if needed in the future
     }
 
     @Test
@@ -209,8 +203,6 @@ public class ScannerTest {
                 .isEqualTo(expectedToken.line);
         }
         
-        // Track test results for summary
-        testsPassed++;
         System.out.println("✓ Test PASSED");
         System.out.println("------------------------------");
     }
