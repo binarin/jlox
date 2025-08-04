@@ -1,5 +1,10 @@
 package com.craftinginterpreters.lox;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.After;
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -10,25 +15,42 @@ import static com.craftinginterpreters.lox.TokenType.*;
  * A test class for the Lox Scanner that compares actual tokens with expected tokens
  */
 public class ScannerTest {
-    private static int testsPassed = 0;
-    private static int testsFailed = 0;
+    private int testsPassed = 0;
+    private int testsFailed = 0;
 
-    public static void main(String[] args) {
-        // Test simple expression
+    @Before
+    public void setUp() {
+        testsPassed = 0;
+        testsFailed = 0;
+    }
+
+    @After
+    public void tearDown() {
+        System.out.println("\nTest Summary:");
+        System.out.println("Tests Passed: " + testsPassed);
+        System.out.println("Tests Failed: " + testsFailed);
+    }
+
+    @Test
+    public void testSimpleExpression() {
         testScanner("1 + 2", Arrays.asList(
             new Token(NUMBER, "1", 1.0, 1),
             new Token(PLUS, "+", null, 1),
             new Token(NUMBER, "2", 2.0, 1),
             new Token(EOF, "", null, 1)
         ));
-        
-        // Test string
+    }
+    
+    @Test
+    public void testString() {
         testScanner("\"Hello, world!\"", Arrays.asList(
             new Token(STRING, "\"Hello, world!\"", "Hello, world!", 1),
             new Token(EOF, "", null, 1)
         ));
-        
-        // Test keywords
+    }
+    
+    @Test
+    public void testKeywords() {
         testScanner("if (true) { print \"yes\"; } else { print \"no\"; }", Arrays.asList(
             new Token(IF, "if", null, 1),
             new Token(LEFT_PAREN, "(", null, 1),
@@ -47,8 +69,10 @@ public class ScannerTest {
             new Token(RIGHT_BRACE, "}", null, 1),
             new Token(EOF, "", null, 1)
         ));
-        
-        // Test multiline lexing
+    }
+    
+    @Test
+    public void testMultilineLexing() {
         testScanner("var a = 1;\nvar b = 2;", Arrays.asList(
             new Token(VAR, "var", null, 1),
             new Token(IDENTIFIER, "a", null, 1),
@@ -62,14 +86,18 @@ public class ScannerTest {
             new Token(SEMICOLON, ";", null, 2),
             new Token(EOF, "", null, 2)
         ));
-        
-        // Test multiline string
+    }
+    
+    @Test
+    public void testMultilineString() {
         testScanner("\"Hello,\nworld!\"", Arrays.asList(
             new Token(STRING, "\"Hello,\nworld!\"", "Hello,\nworld!", 2),
             new Token(EOF, "", null, 2)
         ));
-        
-        // Test single-line comments
+    }
+    
+    @Test
+    public void testSingleLineComments() {
         testScanner("var a = 1; // This is a comment\nvar b = 2;", Arrays.asList(
             new Token(VAR, "var", null, 1),
             new Token(IDENTIFIER, "a", null, 1),
@@ -83,8 +111,10 @@ public class ScannerTest {
             new Token(SEMICOLON, ";", null, 2),
             new Token(EOF, "", null, 2)
         ));
-        
-        // Test single-line comment at end of file
+    }
+    
+    @Test
+    public void testSingleLineCommentAtEndOfFile() {
         testScanner("var a = 1; // This is a comment", Arrays.asList(
             new Token(VAR, "var", null, 1),
             new Token(IDENTIFIER, "a", null, 1),
@@ -93,8 +123,10 @@ public class ScannerTest {
             new Token(SEMICOLON, ";", null, 1),
             new Token(EOF, "", null, 1)
         ));
-        
-        // Test multiline comments
+    }
+    
+    @Test
+    public void testMultilineComments() {
         testScanner("/* This is a\nmultiline comment */var a = 1;", Arrays.asList(
             new Token(VAR, "var", null, 2),
             new Token(IDENTIFIER, "a", null, 2),
@@ -103,8 +135,10 @@ public class ScannerTest {
             new Token(SEMICOLON, ";", null, 2),
             new Token(EOF, "", null, 2)
         ));
-        
-        // Test multiline comments in the middle of code
+    }
+    
+    @Test
+    public void testMultilineCommentsInMiddleOfCode() {
         testScanner("var a = 1; /* This is a\nmultiline comment\nwith multiple lines */var b = 2;", Arrays.asList(
             new Token(VAR, "var", null, 1),
             new Token(IDENTIFIER, "a", null, 1),
@@ -118,8 +152,10 @@ public class ScannerTest {
             new Token(SEMICOLON, ";", null, 3),
             new Token(EOF, "", null, 3)
         ));
-        
-        // Test nested-looking comments (not actually nested, just contains * and / in the content)
+    }
+    
+    @Test
+    public void testNestedLookingComments() {
         testScanner("/* Comment with * and / characters */var a = 1;", Arrays.asList(
             new Token(VAR, "var", null, 1),
             new Token(IDENTIFIER, "a", null, 1),
@@ -128,88 +164,40 @@ public class ScannerTest {
             new Token(SEMICOLON, ";", null, 1),
             new Token(EOF, "", null, 1)
         ));
-        
-        // Print summary
-        System.out.println("\nTest Summary:");
-        System.out.println("Tests Passed: " + testsPassed);
-        System.out.println("Tests Failed: " + testsFailed);
     }
     
-    private static void testScanner(String source, List<Token> expectedTokens) {
+    private void testScanner(String source, List<Token> expectedTokens) {
         System.out.println("Testing: " + source);
         Scanner scanner = new Scanner(source);
         List<Token> actualTokens = scanner.scanTokens();
         
-        boolean testPassed = compareTokens(expectedTokens, actualTokens);
+        assertEquals("Token count mismatch", expectedTokens.size(), actualTokens.size());
         
-        if (testPassed) {
-            System.out.println("✓ Test PASSED");
-            testsPassed++;
-        } else {
-            System.out.println("✗ Test FAILED");
-            testsFailed++;
-        }
-        System.out.println("------------------------------");
-    }
-    
-    private static boolean compareTokens(List<Token> expected, List<Token> actual) {
-        if (expected.size() != actual.size()) {
-            System.out.println("Token count mismatch. Expected: " + expected.size() + 
-                               ", Actual: " + actual.size());
-            return false;
-        }
-        
-        boolean allMatch = true;
-        for (int i = 0; i < expected.size(); i++) {
-            Token expectedToken = expected.get(i);
-            Token actualToken = actual.get(i);
+        for (int i = 0; i < expectedTokens.size(); i++) {
+            Token expectedToken = expectedTokens.get(i);
+            Token actualToken = actualTokens.get(i);
             
-            boolean tokensMatch = compareToken(expectedToken, actualToken);
-            if (!tokensMatch) {
-                System.out.println("Token mismatch at position " + i + ":");
-                System.out.println("  Expected: " + expectedToken);
-                System.out.println("  Actual:   " + actualToken);
-                allMatch = false;
-            }
-        }
-        
-        return allMatch;
-    }
-    
-    private static boolean compareToken(Token expected, Token actual) {
-        // Compare token type
-        if (expected.type != actual.type) {
-            return false;
-        }
-        
-        // Compare lexeme
-        if (!expected.lexeme.equals(actual.lexeme)) {
-            return false;
-        }
-        
-        // Compare literal (with special handling for null and numeric values)
-        if (expected.literal == null && actual.literal != null ||
-            expected.literal != null && actual.literal == null) {
-            return false;
-        }
-        
-        if (expected.literal != null && actual.literal != null) {
-            if (expected.literal instanceof Double && actual.literal instanceof Double) {
+            assertEquals("Token type mismatch at position " + i, expectedToken.type, actualToken.type);
+            assertEquals("Token lexeme mismatch at position " + i, expectedToken.lexeme, actualToken.lexeme);
+            
+            // Compare literal (with special handling for null and numeric values)
+            if (expectedToken.literal == null) {
+                assertNull("Token literal should be null at position " + i, actualToken.literal);
+            } else if (expectedToken.literal instanceof Double && actualToken.literal instanceof Double) {
                 // Compare double values with a small epsilon for floating-point precision
                 double epsilon = 0.0001;
-                if (Math.abs((Double)expected.literal - (Double)actual.literal) > epsilon) {
-                    return false;
-                }
-            } else if (!expected.literal.equals(actual.literal)) {
-                return false;
+                assertTrue("Token numeric literal mismatch at position " + i, 
+                    Math.abs((Double)expectedToken.literal - (Double)actualToken.literal) <= epsilon);
+            } else {
+                assertEquals("Token literal mismatch at position " + i, expectedToken.literal, actualToken.literal);
             }
+            
+            assertEquals("Token line number mismatch at position " + i, expectedToken.line, actualToken.line);
         }
         
-        // Compare line numbers
-        if (expected.line != actual.line) {
-            return false;
-        }
-        
-        return true;
+        // Track test results for summary
+        testsPassed++;
+        System.out.println("✓ Test PASSED");
+        System.out.println("------------------------------");
     }
 }
