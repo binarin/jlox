@@ -179,7 +179,6 @@ class ScannerTest {
      * @param expectedTokens the expected tokens from scanning the source
      */
     private void testScanner(String source, List<Token> expectedTokens) {
-        System.out.println("Testing: " + source);
         var scanner = new Scanner(source);
         var actualTokens = scanner.scanTokens();
         
@@ -223,8 +222,5 @@ class ScannerTest {
                 .as("Token line number mismatch at position %d", i)
                 .isEqualTo(expectedToken.line);
         }
-        
-        System.out.println("✓ Test PASSED");
-        System.out.println("------------------------------");
     }
 }
