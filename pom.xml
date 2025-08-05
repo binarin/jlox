@@ -67,9 +67,29 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.1.0</version>
-                <configuration>
-                    <mainClass>com.craftinginterpreters.lox.Lox</mainClass>
-                </configuration>
+                <executions>
+                    <execution>
+                        <id>lox</id>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>com.craftinginterpreters.lox.Lox</mainClass>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-ast</id>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>com.craftinginterpreters.tool.GenerateAst</mainClass>
+                            <arguments>
+                                <argument>${project.basedir}/src/main/java/com/craftinginterpreters/lox</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

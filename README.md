@@ -23,10 +23,13 @@ mvn test
 mvn package
 
 # Run the REPL
-mvn exec:java
+mvn exec:java@lox
 
 # Run a Lox script
-mvn exec:java -Dexec.args="path/to/script.lox"
+mvn exec:java@lox -Dexec.args="path/to/script.lox"
+
+# Run the GenerateAst tool
+mvn exec:java@generate-ast
 ```
 
 You can also use the provided build script:
@@ -57,6 +60,23 @@ The project follows the standard Maven directory structure:
 
 - `src/main/java/` - Source code
 - `src/test/java/` - Test code
+
+## Code Generation Tools
+
+### GenerateAst Tool
+
+The project includes a code generation tool called `GenerateAst` that automatically generates the abstract syntax tree (AST) classes for the Lox language.
+
+#### Purpose
+The tool generates the `Expr.java` file with the base abstract class and its subclasses for different expression types.
+
+#### Usage with Maven
+```bash
+# Run the GenerateAst tool
+mvn exec:java@generate-ast
+```
+
+This command will generate the AST classes in the `src/main/java/com/craftinginterpreters/lox` directory. The tool is configured in the `pom.xml` file with the output directory as an argument.
 
 ## Testing
 
