@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 
 /**
  * Main class for the Lox interpreter.
@@ -69,18 +68,27 @@ public class Lox {
     private static void run(String source) {
         var scanner = new Scanner(source);
         var tokens = scanner.scanTokens();
+        var parser = new Parser(tokens);
+        var expression = parser.parse();
 
-        tokens.forEach(System.out::println);
+        if (hadError) return;
+
+
+        System.out.println(new AstPrinter().print(expression));
     }
 
     /**
      * Reports an error at the specified line.
      *
-     * @param line the line number where the error occurred
+     * @param token the token on which the error occured
      * @param message the error message
      */
-    static void error(int line, String message) {
-        report(line, "", message);
+    static void error(Token token, String message) {
+        if (token.type == TokenType.EOF) {
+            report(token.line, "at end", message);
+        } else {
+            report(token.line, " at '" + token.lexeme + "'", message);
+        }
     }
 
     /**
@@ -90,7 +98,7 @@ public class Lox {
      * @param where additional context about where the error occurred
      * @param message the error message
      */
-    private static void report(int line, String where, String message) {
+    static void report(int line, String where, String message) {
         System.err.printf("[line %d] Error%s: %s%n", line, where, message);
         hadError = true;
     }
