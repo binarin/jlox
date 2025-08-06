@@ -83,7 +83,7 @@ public class Lox {
      * @param token the token on which the error occured
      * @param message the error message
      */
-    static void error(Token token, String message) {
+    public static void error(Token token, String message) {
         if (token.type == TokenType.EOF) {
             report(token.line, "at end", message);
         } else {
@@ -98,7 +98,7 @@ public class Lox {
      * @param where additional context about where the error occurred
      * @param message the error message
      */
-    static void report(int line, String where, String message) {
+    public static void report(int line, String where, String message) {
         System.err.printf("[line %d] Error%s: %s%n", line, where, message);
         hadError = true;
     }

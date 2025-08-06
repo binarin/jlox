@@ -22,15 +22,29 @@ public class Parser {
 
     private Expr expression() {
         return commaSequence();
+        /*
+        a1 ? bb1 ? bb2 : bb3 : (a2 ? b2 : (a3 ? b3 : c))
+         */
     }
 
     private Expr commaSequence() {
         // equality (COMMA equality) *
-        Expr expr = equality();
+        Expr expr = ternary();
         while (match(COMMA)) {
             Token operator = previous();
-            Expr right = equality();
+            Expr right = ternary();
             expr = new Expr.Binary(expr, operator, right);
+        }
+        return expr;
+    }
+
+    private Expr ternary() {
+        Expr expr = equality();
+        if (match(QUESTION)) {
+            Expr left = equality();
+            consume(COLON, "Expected ':' after true branch of ternary operator.");
+            Expr right = ternary();
+            expr = new Expr.Ternary(expr, left, right);
         }
         return expr;
     }
@@ -120,12 +134,6 @@ public class Parser {
         Lox.error(token, message);
         return new ParseError();
     }
-
-
-
-
-
-
 
     private boolean match(TokenType... types) {
         for (TokenType type : types) {
