@@ -172,6 +172,19 @@ class ScannerTest {
         ));
     }
     
+    @Test
+    @DisplayName("Test scanning of question mark and colon tokens")
+    void testQuestionMarkAndColonTokens() {
+        testScanner("a ? b : c", Arrays.asList(
+            new Token(IDENTIFIER, "a", null, 1),
+            new Token(QUESTION, "?", null, 1),
+            new Token(IDENTIFIER, "b", null, 1),
+            new Token(COLON, ":", null, 1),
+            new Token(IDENTIFIER, "c", null, 1),
+            new Token(EOF, "", null, 1)
+        ));
+    }
+
     /**
      * Helper method to test the scanner with a given source code and expected tokens.
      * 
