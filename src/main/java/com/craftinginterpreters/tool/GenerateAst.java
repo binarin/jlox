@@ -30,6 +30,8 @@ public class GenerateAst {
         String path = outputDir + "/" + baseName + ".java";
         PrintWriter writer = new PrintWriter(path, StandardCharsets.UTF_8);
 
+        System.err.println("Opened '" + path + "' for writing.");
+
         writer.println("package com.craftinginterpreters.lox;");
         writer.println();
         writer.println("import java.util.List;");

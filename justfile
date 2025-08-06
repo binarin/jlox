@@ -10,4 +10,5 @@ test:
 
 # Run AST generator
 gen:
-    mvn exec:java -Dexec.mainClass="com.craftinginterpreters.tool.GenerateAst" -Dexec.args="${PWD}/src/main/java/com/craftinginterpreters/lox"
+    mvn compile
+    java -cp target/classes com.craftinginterpreters.tool.GenerateAst "${PWD}/src/main/java/com/craftinginterpreters/lox"
