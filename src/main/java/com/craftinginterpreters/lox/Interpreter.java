@@ -114,7 +114,7 @@ public class Interpreter implements Expr.Visitor<Object> {
 
     @Override
     public Object visitTernaryExpr(Expr.Ternary expr) {
-        return null;
+        return evaluate(isTruthy(expr.condition) ? expr.left : expr.right);
     }
 
     private Object evaluate(Expr expr) {
