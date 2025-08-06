@@ -13,6 +13,8 @@ import java.nio.file.Path;
  */
 public class Lox {
     private static boolean hadError;
+    private static boolean hadRuntimeError = false;
+    private static final Interpreter interpreter = new Interpreter();
 
     public static void main(String[] args) throws IOException {
         switch (args.length) {
@@ -38,6 +40,7 @@ public class Lox {
         if (hadError) {
             System.exit(65);
         }
+        if (hadRuntimeError) System.exit(70);
     }
 
     /**
@@ -73,14 +76,13 @@ public class Lox {
 
         if (hadError) return;
 
-
-        System.out.println(new AstPrinter().print(expression));
+        interpreter.interpret(expression);
     }
 
     /**
      * Reports an error at the specified line.
      *
-     * @param token the token on which the error occured
+     * @param token the token on which the error occurred
      * @param message the error message
      */
     public static void error(Token token, String message) {
@@ -101,5 +103,10 @@ public class Lox {
     public static void report(int line, String where, String message) {
         System.err.printf("[line %d] Error%s: %s%n", line, where, message);
         hadError = true;
+    }
+
+    public static void runtimeError(RuntimeError error) {
+        System.err.println(error.getMessage() + "\n[line " + error.token.line + "]");
+        hadRuntimeError = true;
     }
 }
