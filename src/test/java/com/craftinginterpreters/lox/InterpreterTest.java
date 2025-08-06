@@ -41,7 +41,19 @@ public class InterpreterTest {
         Scanner scanner = new Scanner(source);
         List<Token> tokens = scanner.scanTokens();
         Parser parser = new Parser(tokens);
-        return parser.parse();
+        List<Stmt> statements = parser.parse();
+        
+        // Extract the expression from the first statement
+        if (statements.isEmpty()) {
+            throw new RuntimeException("No statements returned from parser");
+        }
+        
+        Stmt stmt = statements.get(0);
+        if (!(stmt instanceof Stmt.Expression)) {
+            throw new RuntimeException("First statement is not an expression statement");
+        }
+        
+        return ((Stmt.Expression) stmt).expression;
     }
 
     /**
@@ -52,8 +64,26 @@ public class InterpreterTest {
      */
     private String evaluateExpression(String source) {
         outputStream.reset(); // Clear previous output
-        Expr expression = parseExpression(source);
-        interpreter.interpret(expression);
+        
+        // Add a semicolon to the source if it doesn't already end with one
+        if (!source.trim().endsWith(";")) {
+            source = source + ";";
+        }
+        
+        // Parse the source into statements
+        Scanner scanner = new Scanner(source);
+        List<Token> tokens = scanner.scanTokens();
+        Parser parser = new Parser(tokens);
+        List<Stmt> statements = parser.parse();
+        
+        // Create a print statement for the expression to capture its output
+        if (!statements.isEmpty() && statements.get(0) instanceof Stmt.Expression) {
+            Expr expr = ((Stmt.Expression) statements.get(0)).expression;
+            statements.set(0, new Stmt.Print(expr));
+        }
+        
+        // Interpret the statements
+        interpreter.interpret(statements);
         return outputStream.toString().trim(); // Get output and trim whitespace
     }
 
@@ -202,9 +232,19 @@ public class InterpreterTest {
             hadRuntimeErrorField.setAccessible(true);
             hadRuntimeErrorField.set(null, false);
             
-            // Evaluate the expression
-            Expr expression = parseExpression(source);
-            interpreter.interpret(expression);
+            // Add a semicolon to the source if it doesn't already end with one
+            if (!source.trim().endsWith(";")) {
+                source = source + ";";
+            }
+            
+            // Parse the source into statements
+            Scanner scanner = new Scanner(source);
+            List<Token> tokens = scanner.scanTokens();
+            Parser parser = new Parser(tokens);
+            List<Stmt> statements = parser.parse();
+            
+            // Interpret the statements
+            interpreter.interpret(statements);
             
             // Check if a runtime error occurred
             return (boolean) hadRuntimeErrorField.get(null);

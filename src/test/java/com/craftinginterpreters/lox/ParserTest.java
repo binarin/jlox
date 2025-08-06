@@ -11,6 +11,23 @@ import static com.craftinginterpreters.lox.TokenType.*;
 
 public class ParserTest {
 
+    /**
+     * Helper method to extract an expression from a statement list
+     */
+    private Expr getExpressionFromStatements(List<Stmt> statements) {
+        // We expect the first statement to be an expression statement
+        if (statements.isEmpty()) {
+            throw new RuntimeException("No statements returned from parser");
+        }
+        
+        Stmt stmt = statements.get(0);
+        if (!(stmt instanceof Stmt.Expression)) {
+            throw new RuntimeException("First statement is not an expression statement");
+        }
+        
+        return ((Stmt.Expression) stmt).expression;
+    }
+
     @Test
     @DisplayName("Test parsing ternary operator expression")
     public void testTernaryOperatorParsing() {
@@ -27,12 +44,16 @@ public class ParserTest {
         tokens.add(new Token(COLON, ":", null, 1));
         // 2
         tokens.add(new Token(NUMBER, "2", 2.0, 1));
+        // ;
+        tokens.add(new Token(SEMICOLON, ";", null, 1));
         // EOF
         tokens.add(new Token(EOF, "", null, 1));
 
         // Parse the tokens
         Parser parser = new Parser(tokens);
-        Expr expr = parser.parse();
+        List<Stmt> statements = parser.parse();
+        // Extract the expression from the statement
+        Expr expr = ((Stmt.Expression)statements.get(0)).expression;
 
         // Convert the AST to string representation
         String result = new AstPrinter().print(expr);
@@ -69,12 +90,16 @@ public class ParserTest {
         tokens.add(new Token(STAR, "*", null, 1));
         // 6
         tokens.add(new Token(NUMBER, "6", 6.0, 1));
+        // ;
+        tokens.add(new Token(SEMICOLON, ";", null, 1));
         // EOF
         tokens.add(new Token(EOF, "", null, 1));
 
         // Parse the tokens
         parser = new Parser(tokens);
-        expr = parser.parse();
+        List<Stmt> stmts = parser.parse();
+        // Extract the expression from the statement
+        expr = getExpressionFromStatements(stmts);
 
         // Convert the AST to string representation
         result = new AstPrinter().print(expr);
@@ -109,12 +134,16 @@ public class ParserTest {
         tokens.add(new Token(COLON, ":", null, 1));
         // 3
         tokens.add(new Token(NUMBER, "3", 3.0, 1));
+        // ;
+        tokens.add(new Token(SEMICOLON, ";", null, 1));
         // EOF
         tokens.add(new Token(EOF, "", null, 1));
 
         // Parse the tokens
         parser = new Parser(tokens);
-        expr = parser.parse();
+        List<Stmt> stmts2 = parser.parse();
+        // Extract the expression from the statement
+        expr = getExpressionFromStatements(stmts2);
 
         // Convert the AST to string representation
         result = new AstPrinter().print(expr);
@@ -159,12 +188,16 @@ public class ParserTest {
         tokens.add(new Token(EQUAL_EQUAL, "==", null, 1));
         // 6
         tokens.add(new Token(NUMBER, "6", 6.0, 1));
+        // ;
+        tokens.add(new Token(SEMICOLON, ";", null, 1));
         // EOF
         tokens.add(new Token(EOF, "", null, 1));
 
         // Parse the tokens
         Parser parser = new Parser(tokens);
-        Expr expr = parser.parse();
+        List<Stmt> statements = parser.parse();
+        // Extract the expression from the statement
+        Expr expr = getExpressionFromStatements(statements);
 
         // Convert the AST to string representation
         String result = new AstPrinter().print(expr);
