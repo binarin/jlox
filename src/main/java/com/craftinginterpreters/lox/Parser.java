@@ -14,12 +14,32 @@ public class Parser {
     }
 
     List<Stmt> parse() {
-        List<Stmt> statements = new ArrayList<>();
+        List<Stmt> declarations = new ArrayList<>();
         while (!isAtEnd()) {
-            statements.add(statement());
+            declarations.add(declaration());
         }
 
-        return statements;
+        return declarations;
+    }
+
+    private Stmt declaration() {
+        try {
+            if (match(VAR)) return varDeclaration();
+            return statement();
+        } catch (ParseError e) {
+            synchronize();
+            return null;
+        }
+    }
+
+    private Stmt.Var varDeclaration() {
+        Token name = consume(IDENTIFIER, "identifier expected after `var`");
+        Expr initializer = null;
+        if (match(EQUAL)) {
+            initializer = expression();
+        }
+        consume(SEMICOLON, "`var` statement should end with `;`");
+        return new Stmt.Var(name, initializer);
     }
 
     private Stmt statement() {
@@ -134,12 +154,16 @@ public class Parser {
         if (match(NUMBER, STRING)) {
             return new Expr.Literal(previous().literal);
         }
+
+        if (match(IDENTIFIER)) return new Expr.Variable(previous());
         
         if (match(LEFT_PAREN)) {
             Expr expr = expression();
             consume(RIGHT_PAREN, "Expect ')' after expression.");
             return new Expr.Grouping(expr);
         }
+
+
 
         throw error(peek(), "Unexpected token in `primary`");
     }
