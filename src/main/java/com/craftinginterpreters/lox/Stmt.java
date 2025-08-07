@@ -9,7 +9,7 @@ abstract public class Stmt {
     R visitVarStmt(Var stmt);
   }
 
-  static class Expression extends Stmt {
+  static public class Expression extends Stmt {
     Expression(Expr expression) {
       this.expression = expression;
     }
@@ -21,7 +21,7 @@ abstract public class Stmt {
 
     final Expr expression;
   }
-  static class Print extends Stmt {
+  static public class Print extends Stmt {
     Print(Expr expression) {
       this.expression = expression;
     }
@@ -33,7 +33,7 @@ abstract public class Stmt {
 
     final Expr expression;
   }
-  static class Var extends Stmt {
+  static public class Var extends Stmt {
     Var(Token name, Expr initializer) {
       this.name = name;
       this.initializer = initializer;

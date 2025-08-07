@@ -12,7 +12,7 @@ abstract public class Expr {
     R visitVariableExpr(Variable expr);
   }
 
-  static class Binary extends Expr {
+  static public class Binary extends Expr {
     Binary(Expr left, Token operator, Expr right) {
       this.left = left;
       this.operator = operator;
@@ -28,7 +28,7 @@ abstract public class Expr {
     final Token operator;
     final Expr right;
   }
-  static class Grouping extends Expr {
+  static public class Grouping extends Expr {
     Grouping(Expr expression) {
       this.expression = expression;
     }
@@ -40,7 +40,7 @@ abstract public class Expr {
 
     final Expr expression;
   }
-  static class Literal extends Expr {
+  static public class Literal extends Expr {
     Literal(Object value) {
       this.value = value;
     }
@@ -52,7 +52,7 @@ abstract public class Expr {
 
     final Object value;
   }
-  static class Unary extends Expr {
+  static public class Unary extends Expr {
     Unary(Token operator, Expr right) {
       this.operator = operator;
       this.right = right;
@@ -66,7 +66,7 @@ abstract public class Expr {
     final Token operator;
     final Expr right;
   }
-  static class Ternary extends Expr {
+  static public class Ternary extends Expr {
     Ternary(Expr condition, Expr left, Expr right) {
       this.condition = condition;
       this.left = left;
@@ -82,7 +82,7 @@ abstract public class Expr {
     final Expr left;
     final Expr right;
   }
-  static class Variable extends Expr {
+  static public class Variable extends Expr {
     Variable(Token name) {
       this.name = name;
     }
