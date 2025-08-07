@@ -10,5 +10,4 @@ test:
 
 # Run AST generator
 gen:
-    mvn compile
-    java -cp target/classes com.craftinginterpreters.tool.GenerateAst "${PWD}/src/main/java/com/craftinginterpreters/lox"
+    java ./src/main/java/com/craftinginterpreters/tool/GenerateAst.java "${PWD}/src/main/java/com/craftinginterpreters/lox"
