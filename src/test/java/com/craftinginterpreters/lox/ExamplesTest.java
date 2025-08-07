@@ -92,8 +92,10 @@ public class ExamplesTest {
             System.setOut(new PrintStream(outputStream));
             
             try {
-                // Run the .lox file using reflection to access the private runFile method
-                runLoxFile(loxFile.toString());
+                // Reset the Lox interpreter to a fresh state
+                Lox.reset();
+                // Run the .lox file using the public runFile method
+                Lox.runFile(loxFile.toString());
                 
                 // Get the actual output
                 String actualOutput = outputStream.toString(StandardCharsets.UTF_8).trim();
@@ -111,36 +113,5 @@ public class ExamplesTest {
         });
     }
     
-    /**
-     * Runs a Lox file using direct access to package-private fields.
-     * 
-     * @param path the path to the Lox file
-     * @throws Exception if an error occurs
-     */
-    private void runLoxFile(String path) throws Exception {
-        // Reset the Lox interpreter to a fresh state
-        Lox.reset();
-        
-        // Read the file content
-        byte[] bytes = Files.readAllBytes(Paths.get(path));
-        String source = new String(bytes, StandardCharsets.UTF_8);
-        
-        // Get the interpreter instance directly (now package-private)
-        Interpreter interpreter = Lox.interpreter;
-        
-        // Create scanner, parser, and get statements
-        Scanner scanner = new Scanner(source);
-        List<Token> tokens = scanner.scanTokens();
-        Parser parser = new Parser(tokens);
-        List<Stmt> statements = parser.parse();
-        
-        // Check for errors directly (now package-private)
-        if (Lox.hadError) {
-            return;
-        }
-        
-        // Interpret the statements
-        interpreter.interpret(statements);
-    }
     
 }

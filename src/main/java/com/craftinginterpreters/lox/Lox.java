@@ -46,7 +46,7 @@ public class Lox {
      * @param path the path to the script file
      * @throws IOException if an I/O error occurs
      */
-    private static void runFile(String path) throws IOException {
+    public static void runFile(String path) throws IOException {
         var bytes = Files.readAllBytes(Path.of(path));
         run(new String(bytes, StandardCharsets.UTF_8));
 
