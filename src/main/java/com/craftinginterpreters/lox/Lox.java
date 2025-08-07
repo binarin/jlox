@@ -12,9 +12,22 @@ import java.nio.file.Path;
  * Handles running scripts from files or in interactive mode.
  */
 public class Lox {
-    private static boolean hadError;
-    private static boolean hadRuntimeError = false;
-    private static final Interpreter interpreter = new Interpreter();
+    // Changed from private to package-private to allow access from tests
+    static boolean hadError;
+    static boolean hadRuntimeError = false;
+    // Changed from final to non-final to allow reassignment during reset
+    static Interpreter interpreter = new Interpreter();
+    
+    /**
+     * Resets the Lox interpreter to a fresh state.
+     * This includes resetting error flags and creating a new interpreter instance.
+     */
+    public static void reset() {
+        hadError = false;
+        hadRuntimeError = false;
+        // Create a new interpreter instance instead of using reflection
+        interpreter = new Interpreter();
+    }
 
     public static void main(String[] args) throws IOException {
         switch (args.length) {

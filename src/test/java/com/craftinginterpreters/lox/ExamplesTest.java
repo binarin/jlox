@@ -7,7 +7,6 @@ import org.junit.jupiter.api.DisplayName;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -113,22 +112,21 @@ public class ExamplesTest {
     }
     
     /**
-     * Runs a Lox file using reflection to access the private runFile method.
+     * Runs a Lox file using direct access to package-private fields.
      * 
      * @param path the path to the Lox file
      * @throws Exception if an error occurs
      */
     private void runLoxFile(String path) throws Exception {
-        // Reset the error flags in Lox class
-        setStaticField(Lox.class, "hadError", false);
-        setStaticField(Lox.class, "hadRuntimeError", false);
+        // Reset the Lox interpreter to a fresh state
+        Lox.reset();
         
         // Read the file content
         byte[] bytes = Files.readAllBytes(Paths.get(path));
         String source = new String(bytes, StandardCharsets.UTF_8);
         
-        // Get the interpreter instance
-        Interpreter interpreter = (Interpreter) getStaticField(Lox.class, "interpreter");
+        // Get the interpreter instance directly (now package-private)
+        Interpreter interpreter = Lox.interpreter;
         
         // Create scanner, parser, and get statements
         Scanner scanner = new Scanner(source);
@@ -136,42 +134,13 @@ public class ExamplesTest {
         Parser parser = new Parser(tokens);
         List<Stmt> statements = parser.parse();
         
-        // Check for errors
-        if ((boolean) getStaticField(Lox.class, "hadError")) {
+        // Check for errors directly (now package-private)
+        if (Lox.hadError) {
             return;
         }
         
         // Interpret the statements
-        Method interpretMethod = interpreter.getClass().getDeclaredMethod("interpret", List.class);
-        interpretMethod.setAccessible(true);
-        interpretMethod.invoke(interpreter, statements);
+        interpreter.interpret(statements);
     }
     
-    /**
-     * Sets the value of a static field using reflection.
-     * 
-     * @param clazz the class containing the field
-     * @param fieldName the name of the field
-     * @param value the value to set
-     * @throws Exception if an error occurs
-     */
-    private void setStaticField(Class<?> clazz, String fieldName, Object value) throws Exception {
-        java.lang.reflect.Field field = clazz.getDeclaredField(fieldName);
-        field.setAccessible(true);
-        field.set(null, value);
-    }
-    
-    /**
-     * Gets the value of a static field using reflection.
-     * 
-     * @param clazz the class containing the field
-     * @param fieldName the name of the field
-     * @return the value of the field
-     * @throws Exception if an error occurs
-     */
-    private Object getStaticField(Class<?> clazz, String fieldName) throws Exception {
-        java.lang.reflect.Field field = clazz.getDeclaredField(fieldName);
-        field.setAccessible(true);
-        return field.get(null);
-    }
 }
